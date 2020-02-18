@@ -4,9 +4,10 @@
 
 import Router from 'express-promise-router'
 
+
 const router = Router()
 
-router.get('/', (req, res, next) => {
+router.all('/', (req, res, next) => {
   res.finalize('Welcome')
 })
 

@@ -9,7 +9,7 @@
     "js": "node"
   },
   "watch": [
-    "provider/**/*"
+    "system/**/*"
   ],
   "env": {
     "NODE_ENV": "development"

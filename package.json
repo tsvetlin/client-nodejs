@@ -5,16 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "consumer_dev": "NODE_ENV=development node ./bin/dev_consumer",
     "clean": "rm -rf dist",
-    "build": "npm run clean && mkdir dist && npm run build_consumer && npm run build_provider",
-    "build_consumer": "./node_modules/babel-cli/bin/babel.js ./consumer -s -d ./dist/consumer --copy-files",
-    "build_prpvider": "./node_modules/babel-cli/bin/babel.js ./provider -s -d ./dist/provider --copy-files",
-    "provider_dev": "NODE_ENV=development node ./bin/dev_provider",
-    "consumer": "NODE_ENV=production node ./bin/production_consumer",
-    "provider": "NODE_ENV=production node ./bin/production_provider",
-    "nodemon_consumer": "./node_modules/nodemon/bin/nodemon.js --config nodemon_consumer.json --exec npm run consumer_dev",
-    "nodemon_provider": "./node_modules/nodemon/bin/nodemon.js --config nodemon_provider.json --exec npm run provider_dev"
+    "build": "npm run clean && mkdir dist && npm run build_system",
+    "build_system": "./node_modules/babel-cli/bin/babel.js system -s -d ./dist/system --copy-files",
+    "system_dev": "NODE_ENV=development node ./bin/dev",
+    "system": "NODE_ENV=production node ./bin/production",
+    "nodemon": "./node_modules/nodemon/bin/nodemon.js --config nodemon.json --exec npm run system_dev"
   },
   "repository": {
     "type": "git",
@@ -60,13 +56,17 @@
     "babel-register": "^6.26.0",
     "body-parser": "^1.19.0",
     "boom": "^7.3.0",
+    "colors": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
+    "express-winston": "^4.0.2",
+    "helmet": "^3.21.2",
     "lodash": "latest",
     "morgan": "^1.9.1",
     "node-forge": "^0.9.1",
-    "qs": "^6.9.1"
+    "qs": "^6.9.1",
+    "winston": "^3.2.1"
   }
 }
