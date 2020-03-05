@@ -16,8 +16,12 @@ import fs from 'fs'
 import path from 'path'
 import helmet from 'helmet'
 import colors from 'colors'
-import { echo, register, unregister } from './services/arrowhead/serviceRegistry'
+import { readCoreSystemInfoFile } from './utils/startupHelper'
+import { echo as echoSR, register, unregister } from './services/arrowhead/serviceRegistry'
+import { echo as echoAUTH } from './services/arrowhead/authorization'
+import { echo as echoORCH } from './services/arrowhead/orchestrator'
 import { validateENV } from './utils/startupHelper'
+import { serviceRegistryEntry } from './utils/systemUtils'
 
 export const app = express()
 
@@ -64,17 +68,28 @@ export async function initExpress () {
 export async function start () {
   return initExpress()
     .then(async () => {
-      const response = await echo()
+      const response = await echoSR()
       console.log(response.green)
     })
     .then( async () => {
-      const response = await register(true)
-      console.log('response', response)
+      const response = await register(serviceRegistryEntry,true)
+      console.log(response)
+    })
+    .then(async () => {
+      await readCoreSystemInfoFile(true)
     })
    /* .then(async () => {
       const response = await unregister()
       console.log('unregister', response)
     })*/
+    .then( async () => {
+      const response = await echoAUTH()
+      console.log(response.green)
+    })
+    .then( async () => {
+      const response = await echoORCH()
+      console.log(response.green)
+    })
     .then(() => {
       return new Promise((resolve) => {
         if(config.serverSSLEnabled) {

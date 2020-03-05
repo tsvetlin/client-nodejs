@@ -2,8 +2,8 @@
 .DS_Store
 
 **/certificates/**
-consumer/certificates/**
-provider/certificates/**
+system/coreSystemInfo.json
+
 
 # Logs
 logs

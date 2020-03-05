@@ -38,35 +38,20 @@ export async function echo() {
 /*
   Registering the System with its service into the Service Registry
  */
-export async function register(force = false){
-  const serviceRegistryObject = {
-      endOfValidity: "2020-12-05 23:59:59",
-      interfaces: [
-        "HTTP-SECURE-JSON"
-      ],
-      providerSystem: {
-        address: config.serverAddress,
-        authenticationInfo: 'TODO',
-        port: config.serverPort,
-        systemName: config.clientSystemName
-      },
-      secure: 'TOKEN',
-      serviceDefinition: 'Temperature',
-      serviceUri: "/temperature",
-      version: 1
-    }
+export async function register(serviceRegistryEntry, force = false){
    return new Promise((resolve, reject) => {
-   networkService.post(serviceRegistryAddress + '/register', serviceRegistryObject)
+   networkService.post(serviceRegistryAddress + '/register', serviceRegistryEntry)
       .then((response) => {
         return resolve('Successfully registered service into Service Registry', response.data)
       })
       .catch(async error => {
         if(error.response.data.exceptionType === 'INVALID_PARAMETER'){
           if(force){
-            unregister().then((unregisterResponse) => {
-              register(false)
+            unregister(serviceRegistryEntry.serviceDefinition).then(async () => {
+              await register(serviceRegistryEntry,false)
+              return resolve('Successfully force registered service into Service Registry')
             })
-            return resolve('Successfully force registered service into Service Registry', response2)
+
           }
           return resolve('Service is already registered into Service Registry')
 
@@ -79,13 +64,13 @@ export async function register(force = false){
 /*
   Unregistering the System from the Service Registry
  */
-export async function unregister() {
+export async function unregister(serviceDefinition) {
   console.log('Removing service: Temperature from Service Registry...')
   const queryParams = {
     system_name: config.clientSystemName,
     address: config.serverAddress,
     port: config.serverPort,
-    service_definition: 'Temperature'
+    service_definition: serviceDefinition
   }
 
   return new Promise((resolve, reject) => {
@@ -98,7 +83,28 @@ export async function unregister() {
     })
     .catch(error => {
       console.log('Error removing service', error)
-      return reject(error.res)
+      return reject(error.response.data.errorMessage)
     })
+  })
+}
+
+export async function query(serviceQueryForm) {
+  console.log('Querying system')
+
+  return new Promise((resolve, reject) => {
+    if(!serviceQueryForm.serviceDefinitionRequirement){
+      return reject('Error during querying, missing Service Definition Requirement')
+    }
+
+    networkService.post(serviceRegistryAddress + '/query', serviceQueryForm)
+      .then(response => {
+        if(response.status === 200) {
+          return resolve(response.data)
+        }
+      })
+      .catch(error => {
+        console.log('Error during querying requested service', error)
+        return reject(error.response.data.errorMessage)
+      })
   })
 }
