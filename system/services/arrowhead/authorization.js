@@ -37,5 +37,18 @@ export async function echo() {
 }
 
 export async function getPublicKey(){
-  // TODO
+  return new Promise(async (resolve, reject) => {
+    const authorizationAddress = coreSystemInfo && coreSystemInfo.authorization ? `${config.serverSSLEnabled ? 'https' : 'http' }://${coreSystemInfo.authorization.address}:${coreSystemInfo.authorization.port}/authorization` : null
+      if(!authorizationAddress){
+        return reject('No address for Authorization')
+    }
+
+    networkService.get(authorizationAddress + '/publickey')
+      .then((response) => {
+        return resolve(response.data)
+      }).catch(error => {
+        console.log('Error getting Authorization public key')
+        return reject(error.response.data.errorMessage)
+      })
+  })
 }
