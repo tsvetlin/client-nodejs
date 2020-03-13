@@ -16,11 +16,10 @@ import fs from 'fs'
 import path from 'path'
 import helmet from 'helmet'
 import colors from 'colors'
-import { readCoreSystemInfoFile } from './utils/startupHelper'
+import { readCoreSystemInfoFile, validateENV } from './utils/startupHelper'
 import { echo as echoSR, register, unregister } from './services/arrowhead/serviceRegistry'
 import { echo as echoAUTH } from './services/arrowhead/authorization'
 import { echo as echoORCH } from './services/arrowhead/orchestrator'
-import { validateENV } from './utils/startupHelper'
 import { serviceRegistryEntry } from './utils/systemUtils'
 
 export const app = express()
@@ -45,6 +44,10 @@ export async function initExpress () {
   if (config.env !== 'test' && config.env !== 'production') {
     app.use(logger('dev'))
   }
+
+  //set the template engine ejs
+  app.set('view engine', 'ejs')
+  app.use(express.static('public'))
   app.use(responseMiddleware())
   app.use(bodyParser.json({limit: '5mb'}))
   app.use(bodyParser.urlencoded({extended: false, limit: '5mb'}))
@@ -72,11 +75,11 @@ export async function start () {
       console.log(response.green)
     })
     .then( async () => {
-      const response = await register(serviceRegistryEntry,true)
+      const response = await register(serviceRegistryEntry,false)
       console.log(response)
     })
     .then(async () => {
-      await readCoreSystemInfoFile(true)
+      await readCoreSystemInfoFile(false)
     })
    /* .then(async () => {
       const response = await unregister()
@@ -94,7 +97,10 @@ export async function start () {
       return new Promise((resolve) => {
         if(config.serverSSLEnabled) {
           //  SECURE mode
-          https.createServer(options, app).listen(config.serverPort, () => {
+          const server = https.createServer(options, app)
+          const io = require('socket.io')(server)
+          app.io = io
+          server.listen(config.serverPort, () => {
             console.log('System started in SECURE mode at', `https://${config.serverAddress}:${config.serverPort}`)
             return resolve()
           })
