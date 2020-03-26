@@ -1,13 +1,12 @@
 $(function () {
   //  make connection
-  const socket = io.connect('https://localhost:5000')
+  const socket = io.connect('https://10.9.2.25:5000')
 
   const area0 = $('#area0')
   const area1 = $('#area1')
 
   //  Receive colorful balls
-  socket.on('arrowhead', (data) => {
-
+  socket.on('balldemo', (data) => {
     const area0Object = Object.entries(data.area[0])
     const area1Object = Object.entries(data.area[1])
 

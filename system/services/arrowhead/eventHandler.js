@@ -23,7 +23,6 @@ export async function echo() {
       }
     }, 1000)
 
-
     response = await networkService.get(eventHandlerAddress + '/echo', {cancelToken: source.token})
       .then(() => {
         return resolve('Event Handler is accessible')

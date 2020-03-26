@@ -65,7 +65,7 @@ export async function register(serviceRegistryEntry, force = false){
   Unregistering the System from the Service Registry
  */
 export async function unregister(serviceDefinition) {
-  console.log('Removing service: Temperature from Service Registry...')
+  console.log(`Removing service: ${serviceDefinition} from Service Registry...`)
   const queryParams = {
     system_name: config.clientSystemName,
     address: config.serverAddress,

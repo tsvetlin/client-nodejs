@@ -21,12 +21,14 @@ import { echo as echoSR, register, unregister } from './services/arrowhead/servi
 import { echo as echoAUTH } from './services/arrowhead/authorization'
 import { echo as echoORCH } from './services/arrowhead/orchestrator'
 import { serviceRegistryEntry } from './utils/systemUtils'
+import { getBallDataForDashboard, getZinqBerry } from './services/balldemo/balldemo'
+import { getHistorianData, getHistorianDataForDashboard } from './services/dashboard/dashboard'
 
 export const app = express()
 
 let options = {}
 
-if(config.serverSSLEnabled) {
+if (config.serverSSLEnabled) {
   options = {
     pfx: [{
       buf: fs.readFileSync(path.resolve(__dirname, 'certificates', config.serverSSLKeyStore)),
@@ -34,7 +36,7 @@ if(config.serverSSLEnabled) {
     }],
     ca: [fs.readFileSync(path.resolve(__dirname, 'certificates', config.serverSSLTrustStore)), config.serverSSLTrustStorePassword],
     rejectUnauthorized: true,
-    requestCert: config.serverSSLClientAuth === 'need',
+    requestCert: config.serverSSLClientAuth === 'need'
   }
 }
 
@@ -48,10 +50,12 @@ export async function initExpress () {
   //set the template engine ejs
   app.set('view engine', 'ejs')
   app.use(express.static('public'))
+
+  app.use('/assets', express.static('assets'))
+
   app.use(responseMiddleware())
   app.use(bodyParser.json({limit: '5mb'}))
   app.use(bodyParser.urlencoded({extended: false, limit: '5mb'}))
-
 
   app.use(helmet())
 
@@ -74,8 +78,8 @@ export async function start () {
       const response = await echoSR()
       console.log(response.green)
     })
-    .then( async () => {
-      const response = await register(serviceRegistryEntry,false)
+    .then(async () => {
+      const response = await register(serviceRegistryEntry,true)
       console.log(response)
     })
     .then(async () => {
@@ -89,13 +93,25 @@ export async function start () {
       const response = await echoAUTH()
       console.log(response.green)
     })
-    .then( async () => {
+    .then(async () => {
       const response = await echoORCH()
       console.log(response.green)
     })
+    .then(async () => {
+      await getHistorianData()
+    })
+    .then(() => {
+      setInterval(getHistorianDataForDashboard, 1 * 1000)
+    })
+    .then(async () => {
+      // await getZinqBerry()
+    })
+    .then(() => {
+      // setInterval(getBallDataForDashboard, 1 * 1000)
+    })
     .then(() => {
       return new Promise((resolve) => {
-        if(config.serverSSLEnabled) {
+        if (config.serverSSLEnabled) {
           //  SECURE mode
           const server = https.createServer(options, app)
           const io = require('socket.io')(server)
@@ -113,7 +129,7 @@ export async function start () {
         }
       })
     })
-    .catch( (e) => {
+    .catch((e) => {
       console.log(typeof e === 'string' ? `ERROR: ${e}`.red : e)
       console.log(`ERROR: System not started on ${os.hostname()}, now exiting.`.red)
       process.exit()

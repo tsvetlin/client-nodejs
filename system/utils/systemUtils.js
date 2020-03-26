@@ -39,9 +39,9 @@ const privateKeyPem = forge.pki.privateKeyInfoToPem(privateKeyInfo)
 
 // Service(s) the system want to provide
 export const serviceRegistryEntry = {
-  endOfValidity: "2020-12-05 23:59:59",
+  endOfValidity: '2020-12-05 23:59:59',
   interfaces: [
-    "HTTP-SECURE-JSON"
+    'HTTP-SECURE-HTML'
   ],
   providerSystem: {
     address: config.serverAddress,
@@ -49,8 +49,60 @@ export const serviceRegistryEntry = {
     port: config.serverPort,
     systemName: config.clientSystemName
   },
-  secure: 'TOKEN',
-  serviceDefinition: 'Temperature',
-  serviceUri: "/temperature",
+  secure: 'CERTIFICATE',
+  serviceDefinition: 'Enterprise-Dashboard',
+  serviceUri: '/dashboard',
   version: 1
+}
+
+export const serviceRegistryEntryBallDemo = {
+  endOfValidity: '2020-12-05 23:59:59',
+  interfaces: [
+    'HTTP-SECURE-HTML'
+  ],
+  providerSystem: {
+    address: config.serverAddress,
+    authenticationInfo: serverSSLKeyStorePublicKey,
+    port: config.serverPort,
+    systemName: config.clientSystemName
+  },
+  secure: 'CERTIFICATE',
+  serviceDefinition: 'BallDemo-Dashboard',
+  serviceUri: '/ball',
+  version: 1
+}
+
+export const serviceRequestFormDashboard = {
+  requesterSystem: {
+    systemName: config.clientSystemName,
+    address: config.serverAddress,
+    port: config.serverPort,
+    authenticationInfo: serverSSLKeyStorePublicKey
+  },
+  requestedService: {
+    serviceDefinitionRequirement: 'fetch-from-historian-proxy',
+    interfaceRequirements: [ 'HTTP-SECURE-JSON' ]
+  },
+  orchestrationFlags: {
+    enableInterCloud: true,
+    triggerInterCloud: true
+  }
+}
+
+export const serviceRequestFormBalldemo = {
+  requesterSystem: {
+    systemName: config.clientSystemName,
+    address: config.serverAddress,
+    port: config.serverPort,
+    authenticationInfo: serverSSLKeyStorePublicKey
+  },
+  requestedService: {
+    serviceDefinitionRequirement: 'UTIA_Sensor_Example',
+    interfaceRequirements: [ 'HTTP-SECURE-JSON' ],
+    securityRequirements: [ 'TOKEN' ]
+  },
+  orchestrationFlags: {
+    enableInterCloud: true,
+    triggerInterCloud: true
+  }
 }

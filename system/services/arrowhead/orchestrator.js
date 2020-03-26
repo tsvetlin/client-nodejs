@@ -46,14 +46,11 @@ export async function orchestration (serviceRequestForm) {
   //preferredProviders, requestedService, requesterCloud, orchestratorFlags, commands
   console.log('Orchestration started...')
   return new Promise( (resolve, reject) => {
-    const orchestratorAddress =  coreSystemInfo && coreSystemInfo.orchestrator ? `${config.serverSSLEnabled ? 'https' : 'http' }://${coreSystemInfo.orchestrator.address}:${coreSystemInfo.orchestrator.port}/orchestrator` : null
+    const orchestratorAddress = coreSystemInfo && coreSystemInfo.orchestrator ? `${config.serverSSLEnabled ? 'https' : 'http' }://${coreSystemInfo.orchestrator.address}:${coreSystemInfo.orchestrator.port}/orchestrator` : null
     if(!orchestratorAddress){
       return reject('No address for Orchestrator')
     }
 
-    if(!serviceRequestForm.preferredProviders) {
-      return reject('Error during orchestration, missing Preferred Providers')
-    }
     if(!serviceRequestForm.requestedService) {
       return reject('Error during orchestration, missing Requested Service')
     }

@@ -22,5 +22,6 @@ export const config = {
   serverSSLClientAuth: process.env.SERVER_SSL_CLIENT_AUTH,
   serverSSLTrustStoreType: process.env.SERVER_SSL_TRUST_STORE_TYPE,
   serverSSLTrustStore: process.env.SERVER_SSL_TRUST_STORE,
-  serverSSLTrustStorePassword: process.env.SERVER_SSL_TRUST_STORE_PASSWORD
+  serverSSLTrustStorePassword: process.env.SERVER_SSL_TRUST_STORE_PASSWORD,
+  socketAddress: `${getBool(process.env.SERVER_SSL_ENABLED) ? 'https' : 'http'}://${process.env.SR_ADDRESS}:${process.env.SERVER_PORT}`
 }

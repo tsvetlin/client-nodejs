@@ -13,7 +13,7 @@ let axiosOptions = {}
 
 if(config.serverSSLEnabled) {
   httpsAgent = new https.Agent({
-    rejectUnauthorized: true,
+    rejectUnauthorized: false,
     pfx: fs.readFileSync(path.resolve(__dirname, `../../certificates/${config.serverSSLKeyStore}`)),
     passphrase: config.serverSSLKeyStorePassword
   })
