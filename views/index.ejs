@@ -4,18 +4,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="socket.io.js"></script>
+    <script src="moment.min.js"></script>
     <title>Arrowhead Demo</title>
 </head>
 <body>
-<div>
-    <span>Area 0</span>
-    <div id="area0" class="square">
-    </div>
-</div>
-<div class="spacer"></div>
-<div>
-    <span>Area 1</span>
-    <div id="area1" class="square">
+<div class="container">
+    <h1 id="sensorName"></h1>
+    <div id="timestamp"></div>
+    <div class="area">
+        <div>
+            <span>Area 0 <span id="count0">count: 0</span></span>
+            <div id="area0" class="square">
+            </div>
+        </div>
+        <div class="spacer"></div>
+        <div>
+            <span>Area 1 <span id="count1">count: 0</span></span>
+            <div id="area1" class="square">
+            </div>
+        </div>
     </div>
 </div>
 

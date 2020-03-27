@@ -11,7 +11,7 @@ import {app} from '../../app'
 
 let historian = {}
 
-const timeout = 1000
+const timeout = 60000
 
 export async function getHistorianData() {
   const orchestrationResponse = await orchestration(serviceRequestFormDashboard)
@@ -87,15 +87,18 @@ export async function getHistorianSystemList(address, port, serviceUri) {
     response = await networkService.get(historianAddress, {cancelToken: source.token})
       .then(response => {
         //console.log('gethistoriansystemlist', response.data)
+        console.log('AAA data')
         return resolve(response.data.systems)
       })
       .catch(error => {
         if(axios.isCancel(error)){
-          console.log('AAAA CANCEL', error.message)
-          return reject(error.message)
+          console.log('AAAA CANCEL')
+          //return reject(error.message)
+          return resolve({systems: []})
         }
-        console.log(error)
-        return reject(error)
+        console.log(error.response.data)
+        //return reject(error)
+        return resolve({systems: []})
       })
   })
 }
@@ -128,15 +131,18 @@ export async function getHistorianSystem(systems) {
       response = await networkService.get(historianAddress, {cancelToken: source.token})
         .then(response => {
           //console.log('gethistoriansystem', response.data)
+          console.log('BBB data')
           return resolve({...response.data, systemName})
         })
         .catch(error => {
           if(axios.isCancel(error)){
             console.log('BBB CANCEL')
-            return reject(error.message)
+            //return reject(error.message)
+            return resolve({systemName, services: []})
           }
-          console.log(error)
-          return reject(error)
+          console.log(error.response.data)
+          //return reject(error)
+          return resolve({systemName, services: []})
         })
     }))
   }
@@ -158,7 +164,7 @@ export async function getHistorianServiceData(historianData) {
     for (const serviceDefinition of services) {
       promises.push(new Promise(async (resolve, reject) => {
         const historianAddress = `${config.serverSSLEnabled ? 'https' : 'http'}://${historian.address}:${historian.port}${historian.serviceUri}/${systemName}/${serviceDefinition}`
-        // console.log('AAAA', historianAddress)
+        console.log(historianAddress)
         let response = null
         const source = axios.CancelToken.source()
 
@@ -170,19 +176,22 @@ export async function getHistorianServiceData(historianData) {
 
         response = await networkService.get(historianAddress, {
           cancelToken: source.token,
-          params: {count: 1000, to: 1619949538}
+          params: {count: 200, to: 1619949538}
         })
           .then(response => {
             //console.log('historianServiceData', response.data)
+            console.log('CCC data')
             return resolve({...response.data, systemName})
           })
           .catch(error => {
             if(axios.isCancel(error)){
               console.log('CCC cancel')
-              return reject(error.message)
+              //return reject(error.message)
+              return resolve({systemName, data: []})
             }
-            console.log(error)
-            return reject(error)
+            console.log(error.response.data)
+            //return reject(error)
+            return resolve({systemName, data: []})
           })
       }))
     }
@@ -230,12 +239,12 @@ export async function getHistorianDataForDashboard() {
           helperObject[element.n].push(element)
         }
       }
-      o.offerings = helperObject
+      o.signals = helperObject
     }
     aggregated.push(o)
   }
 
-  //console.log(JSON.stringify(aggregated, null, 4))
+  // console.log(JSON.stringify(aggregated, null, 4))
 
   /* [
     {
@@ -655,7 +664,8 @@ export async function getHistorianDataForDashboard() {
     }
   ]*/
 
-  console.log('Data sent')
-
-  app.io.emit('historian', aggregated)
+  if (aggregated !== []) {
+    console.log('Data sent')
+    app.io.emit('historian', aggregated)
+  }
 }

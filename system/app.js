@@ -89,7 +89,7 @@ export async function start () {
       const response = await unregister()
       console.log('unregister', response)
     })*/
-    .then( async () => {
+    .then(async () => {
       const response = await echoAUTH()
       console.log(response.green)
     })
@@ -98,16 +98,16 @@ export async function start () {
       console.log(response.green)
     })
     .then(async () => {
-      await getHistorianData()
+     await getHistorianData()
     })
     .then(() => {
-      setInterval(getHistorianDataForDashboard, 1 * 1000)
+     setInterval(getHistorianDataForDashboard, 5 * 1000)
     })
     .then(async () => {
-      // await getZinqBerry()
+      await getZinqBerry()
     })
     .then(() => {
-      // setInterval(getBallDataForDashboard, 1 * 1000)
+      setInterval(getBallDataForDashboard, 1 * 1000)
     })
     .then(() => {
       return new Promise((resolve) => {

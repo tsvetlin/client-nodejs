@@ -92,8 +92,14 @@ header div span {
     padding: 20px 0px;
 }
 
-.offeringName {
+.signalName {
     font-size: 2rem;
+}
+
+.signalText {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 1.5rem;
 }
 
 hr {

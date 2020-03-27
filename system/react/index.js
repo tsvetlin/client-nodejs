@@ -22,7 +22,7 @@ export default class ReactApp extends Component {
       this.setState({data})
     })
     socket.on('historian', historian => {
-      console.log('historian', historian)
+      // console.log('historian', historian)
       this.setState({historian})
     })
   }
@@ -30,34 +30,68 @@ export default class ReactApp extends Component {
   createHistorianView(historianData) {
     let historianView = []
     for (const entry of historianData) {
-      historianView.push(
-        <div className="card">
-          <h3>{entry.systemName}</h3>
-          <div className="bn">{entry.service.bn}</div>
-          <span>{moment(entry.service.bt * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>
-          <div>{this.drawCharts(entry.offerings)}</div>
-        </div>
-      )
+      if (entry.service && entry.signals && entry.systemName) {
+        historianView.push(
+          <div className="card">
+            <h3>{entry.systemName}</h3>
+            <div className="bn">{entry.service.bn}</div>
+            <span>{moment(entry.service.bt * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>
+            <div>{this.drawCharts(entry.signals)}</div>
+          </div>
+        )
+      }
     }
     return historianView
   }
 
-  drawCharts(offerings) {
-    let offeringsView = []
-    for (const key in offerings) {
-      offeringsView.push(
-        <div>
-          <hr/>
-          <div className="offeringName">{key}</div>
-          <div className="diagram">{this.drawChart(offerings[key])}</div>
-        </div>
-      )
+  drawCharts(signals) {
+    let signalsView = []
+    for (const key in signals) {
+      console.log(signals[key])
+      if (signals[key][0].vb !== undefined) {
+        // Add a boolean valued diagram
+        signalsView.push(
+          <div>
+            <hr />
+            <div className="signalName">{key}</div>
+            <div className="signalText">{signals[key][0].vb ? 'Available' : 'Not available'}</div>
+          </div>
+        )
+      } else if (signals[key][0].vs) {
+        // Add a string based diagram
+        signalsView.push(
+          <div>
+            <hr/>
+            <div className="signalName">{key}</div>
+            <div className="signalText">{signals[key][0].vs}</div>
+          </div>
+        )
+      } else if ((signals[key].length === 1 && signals[key][0].t === '') || (signals[key].length > 2 && signals[key][0].t === '' && signals[key][1].t === '')) {
+        // Timestamp missing everywhere, add a value diagram
+        signalsView.push(
+          <div>
+            <hr/>
+            <div className="signalName">{key}</div>
+            <div className="signalText">{signals[key][signals[key].length - 1].v}</div>
+          </div>
+        )
+      } else {
+        // Add a regular diagram
+        signals[key].shift()
+        signalsView.push(
+          <div>
+            <hr/>
+            <div className="signalName">{key}</div>
+            <div className="diagram">{this.drawChart(signals[key])}</div>
+          </div>
+        )
+      }
     }
-    return offeringsView
+    return signalsView
   }
 
   drawChart(chartData) {
-    const unit = chartData[0].u
+    const unit = chartData[0].u || ''
     const fontSize = 16
     return (
       <LineChart width={600} height={300} data={chartData} margin={{top: 5, right: 30, left: 20, bottom: 5}}>

@@ -14,7 +14,7 @@ const router = Router()
 
 //router.all('/', (req,))
 
-router.all('/ball', (req, res, next) => {
+router.get('/ball', (req, res, next) => {
   res.render('index')
 })
 
