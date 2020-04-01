@@ -27,7 +27,7 @@ const publicKeyPem = forge.pki.publicKeyToPem(publicKey)
 //console.log(forge.pki.publicKeyToPem(publicKey))
 const lines = publicKeyPem.split('\r\n')
 lines.splice(0, 1)
-lines.splice(lines.length -2, 2)
+lines.splice(lines.length - 2, 2)
 serverSSLKeyStorePublicKey = lines.join('') //public key joined into a single line without header
 
 /*

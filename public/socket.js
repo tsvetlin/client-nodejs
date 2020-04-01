@@ -42,7 +42,7 @@ $(function () {
     sensorName.text(sensorText)
     timestamp.text(timestampValue)
     count0.text(`count: ${ballCountArea0}`)
-    count1.text(`count: ${ballCountArea1w}`)
+    count1.text(`count: ${ballCountArea1}`)
     area0.html(area0HTML)
     area1.html(area1HTML)
   })
